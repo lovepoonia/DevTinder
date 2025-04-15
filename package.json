@@ -1,0 +1,21 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "Tinder for Devloper.",
+  "main": "index.js",
+  "scripts": {
+    "start":"npm src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "Node",
+    "Js",
+    "JavaScript"
+  ],
+  "author": "Love Poonia",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9"
+  }
+}

@@ -4,7 +4,7 @@
   "description": "Tinder for Devloper.",
   "main": "index.js",
   "scripts": {
-    "start":"npm src/app.js",
+    "start": "npm src/app.js",
     "dev": "nodemon src/app.js"
   },
   "keywords": [
@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0",
+    "mongoose": "^8.13.2",
     "nodemon": "^3.1.9"
   }
 }

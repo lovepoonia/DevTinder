@@ -1,6 +1,8 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const validator = require("validator")
+const validator = require("validator");
+const validateSingUpData = require("./utils/validation")
+const bcrypt = require("bcrypt")
 const app = express();
 const User = require("./models/user");
 
@@ -8,12 +10,42 @@ app.use(express.json());
 
 // signup api
 app.post("/signup", async (req, res) =>{
-    const user = new User(req.body)
     try {
+        validateSingUpData(req);
+        const {firstName , lastName, email, password , gender} = req.body;
+
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        const user = new User({firstName , lastName, email, password: hashPassword, gender});
+
         await user.save();
         res.send("user created");
     } catch (err) {
         res.status(500).send("not register"+err.message);
+    }
+})
+
+// login api
+app.post("/login", async(req, res) =>{
+    try {
+        const {email , password} = req.body;
+        if(!validator.isEmail(email)){
+            throw new Error("Enter valid email");
+        }
+
+        const user = await User.findOne({email:email});
+        if(!user){
+            throw new Error("Invalid Credentials");
+        }
+
+        const isPassword = await bcrypt.compare(password , user.password);
+        if(isPassword){
+            res.send("login success");
+        } else {
+            throw new Error("Invalid Credentials");
+        }
+    } catch (error) {
+        res.status(500).send("not login"+error.message);
     }
 })
 
@@ -61,10 +93,10 @@ app.patch("/user/:userId", async (req, res)=>{
         const Allowed_Update = ["userId","age","photoUrl","experience","about","skills"];
         const allowedKeys = Object.keys(data).every(key => Allowed_Update.includes(key));
         if(!allowedKeys){
-            throw new error("update not allowed");
+            throw new Error("update not allowed");
         }
         if(data?.skills.length > 10){
-            throw new error("skill limit exceeded like 10");
+            throw new Error("skill limit exceeded like 10");
         }
         const isValidUrl = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i.test(data?.photoUrl);
         if (!isValidUrl) {
@@ -73,7 +105,7 @@ app.patch("/user/:userId", async (req, res)=>{
 
         // using validator library
         // if(!validator.isURL(data?.photoUrl)){
-        //     throw new error("invalid photo url");
+        //     throw new Error("invalid photo url");
         // }
         const user = await User.findByIdAndUpdate(userId, data);
         res.send("user updated");

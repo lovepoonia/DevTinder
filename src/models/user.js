@@ -61,7 +61,8 @@ const userSchema = new mongoose.Schema({
         }
     },
     experience:{
-        type:Number
+        type:Number,
+        default:0
     },
     photoUrl:{
         type:String,
@@ -77,7 +78,8 @@ const userSchema = new mongoose.Schema({
         default:'I am new user'
     },
     skills:{
-        type:[String]
+        type:[String],
+        default:["No skill"]
     },
     gender:{
         type:String,

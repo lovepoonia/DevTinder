@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/database");
+const validator = require("validator")
 const app = express();
 const User = require("./models/user");
 
@@ -12,7 +13,7 @@ app.post("/signup", async (req, res) =>{
         await user.save();
         res.send("user created");
     } catch (err) {
-        res.status(500).send("not register");
+        res.status(500).send("not register"+err.message);
     }
 })
 
@@ -53,18 +54,49 @@ app.delete("/user", async (req, res) =>{
 })
 
 // update api using id
-app.patch("/user", async (req, res)=>{
-    const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res)=>{
+    const userId = req.params?.userId;
     const data = req.body;
     try {
+        const Allowed_Update = ["userId","age","photoUrl","experience","about","skills"];
+        const allowedKeys = Object.keys(data).every(key => Allowed_Update.includes(key));
+        if(!allowedKeys){
+            throw new error("update not allowed");
+        }
+        if(data?.skills.length > 10){
+            throw new error("skill limit exceeded like 10");
+        }
+        const isValidUrl = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i.test(data?.photoUrl);
+        if (!isValidUrl) {
+          return res.status(400).json({ error: 'Invalid photo URL' });
+        }
+
+        // using validator library
+        // if(!validator.isURL(data?.photoUrl)){
+        //     throw new error("invalid photo url");
+        // }
         const user = await User.findByIdAndUpdate(userId, data);
         res.send("user updated");
     } catch (error) {
-        res.send("somthing went wrong"); 
+        res.send("somthing went wrong"+error.message); 
     }
 })
 
-
+// update api using email
+app.patch("/email", async (req, res)=>{
+    const email =req.body.email;
+    const data = req.body;
+    try {
+            const updatedUser = await User.findOneAndUpdate(
+              { email},        // filter
+              { $set: data },    // update
+              { new: true }            // return the updated doc
+            );
+        res.send("user updated");
+    } catch (error) {
+        res.send(error); 
+    }
+})
 
 connectDB()
     .then(()=>{

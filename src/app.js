@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt")
 const cookieParser = require("cookie-parser");
 const User = require("./models/user");
 const jwt = require("jsonwebtoken");
+const userAuth = require("./middlewares/auth")
 
 const app = express();
 app.use(cookieParser());
@@ -44,17 +45,15 @@ app.post("/login", async(req, res) =>{
             throw new Error("Invalid Credentials");
         }
 
-        const isPassword = await bcrypt.compare(password , user.password);
+        const isPassword = await user.validatePassword(password)
         if(isPassword){
             // create jwt token
 
-            const token = await jwt.sign(
-                {_id: user._id},
-                process.env.SECRET_KEY,
-            )
+            const token = await user.getJWT();
+            
 
             // add the token to the cookie and send the response back to the client
-            res.cookie("token" , token);
+            res.cookie("token" , token, {expires:new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)});
 
             res.send("login success");
         } else {
@@ -81,21 +80,10 @@ app.get("/user" , async (req, res) =>{
 })
 
 // profile api
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth,  async (req, res) => {
     try {
-        const cookies = req.cookies;
-        const {token} = cookies;
-
-        if(!token){
-            throw new Error("token not found");
-        }
-        const decodeMessage = await jwt.verify(token, process.env.SECRET_KEY);
-        
-        const {_id}= decodeMessage;
-        const user = await User.findById(_id);
-        if(!user){
-            throw new Error("user not found");
-        }
+       const user = req.user;
+    //    console.log(user)
         res.send(user);
     } catch (error) {
         res.status(400).send("Error : "+error.message);

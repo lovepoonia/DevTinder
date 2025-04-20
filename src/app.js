@@ -3,8 +3,14 @@ const connectDB = require("./config/database");
 const validator = require("validator");
 const validateSingUpData = require("./utils/validation")
 const bcrypt = require("bcrypt")
-const app = express();
+const cookieParser = require("cookie-parser");
 const User = require("./models/user");
+const jwt = require("jsonwebtoken");
+
+const app = express();
+app.use(cookieParser());
+require("dotenv").config();
+
 
 app.use(express.json());
 
@@ -40,6 +46,16 @@ app.post("/login", async(req, res) =>{
 
         const isPassword = await bcrypt.compare(password , user.password);
         if(isPassword){
+            // create jwt token
+
+            const token = await jwt.sign(
+                {_id: user._id},
+                process.env.SECRET_KEY,
+            )
+
+            // add the token to the cookie and send the response back to the client
+            res.cookie("token" , token);
+
             res.send("login success");
         } else {
             throw new Error("Invalid Credentials");
@@ -61,6 +77,28 @@ app.get("/user" , async (req, res) =>{
         }
     } catch (err){
         res.status(500).send("server error");
+    }
+})
+
+// profile api
+app.get("/profile", async (req, res) => {
+    try {
+        const cookies = req.cookies;
+        const {token} = cookies;
+
+        if(!token){
+            throw new Error("token not found");
+        }
+        const decodeMessage = await jwt.verify(token, process.env.SECRET_KEY);
+        
+        const {_id}= decodeMessage;
+        const user = await User.findById(_id);
+        if(!user){
+            throw new Error("user not found");
+        }
+        res.send(user);
+    } catch (error) {
+        res.status(400).send("Error : "+error.message);
     }
 })
 

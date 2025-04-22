@@ -92,6 +92,14 @@ const userSchema = new mongoose.Schema({
             }
         }
     }, 
+    linkedinUrl:{
+        type:String,
+        default:"edit later..."
+    },
+    githubUrl:{
+        type:String,
+        default:"edit later..."
+    }
 },{
     timestamps:true
 });
@@ -99,6 +107,7 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.validatePassword = async function(passwordInputByUser){
     const user = this;
     const hashedPassword = user.password;
+    
     const isValidPassword = await bcrypt.compare(passwordInputByUser, hashedPassword);
     return isValidPassword;
 }

@@ -14,4 +14,12 @@ const validateSingUpData = (req) => {
     }
 }
 
-module.exports = validateSingUpData;
+const validateEditProfileData = (req) =>{
+    const isallowed = ["firstName", "lastName", "age","about", "skills", "gender", "experience","photoUrl","linkedinUrl", "githubUrl"];
+
+    const isValid = Object.keys(req.body).every(field => isallowed.includes(field));
+
+    return isValid;
+}
+
+module.exports = {validateSingUpData, validateEditProfileData};

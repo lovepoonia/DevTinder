@@ -74,7 +74,7 @@ requestRouter.post("/request/review/:status/:requestId" ,userAuth , async (req, 
         });
     
         if(!connectionRequest){
-            res.json({
+            return res.json({
                 message: "Invalid connection request"
             })
         }

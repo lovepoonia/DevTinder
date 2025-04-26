@@ -5,9 +5,14 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const cors = require("cors");
 
 const app = express();
 app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:5173/login',
+    credentials:true
+}));
 require("dotenv").config();
 app.use(express.json());
 

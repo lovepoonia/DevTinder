@@ -10,13 +10,15 @@ const cors = require("cors");
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173/login',
-    credentials:true
-}));
+    origin: 'http://localhost:5173',  // 👈 allow only your frontend
+    credentials: true                 // 👈 allow cookies, sessions, etc.
+  }));
+  
+
 require("dotenv").config();
 app.use(express.json());
 
-app.use("/" , authRouter);
+app.use("/auth" , authRouter);
 app.use("/" , profileRouter);
 app.use("/" , requestRouter);
 app.use("/" , userRouter);

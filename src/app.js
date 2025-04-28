@@ -10,16 +10,19 @@ const cors = require("cors");
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173',  // 👈 allow only your frontend
-    credentials: true                 // 👈 allow cookies, sessions, etc.
+    origin: 'http://localhost:5173', 
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],                 
   }));
+
   
 
 require("dotenv").config();
 app.use(express.json());
 
 app.use("/auth" , authRouter);
-app.use("/" , profileRouter);
+app.use("/profile" , profileRouter);
 app.use("/" , requestRouter);
 app.use("/" , userRouter);
 

@@ -1,7 +1,7 @@
 const validator = require("validator");
 
 const validateSingUpData = (req) => {
-    const {firstName ,  email, password, gender} = req.body;
+    const {firstName ,  email, password, age} = req.body;
 
     if(!firstName ){
         throw new Error("Name is not valid");
@@ -9,8 +9,8 @@ const validateSingUpData = (req) => {
         throw new Error("Email is not valid");
     } else if(!validator.isStrongPassword(password)){
         throw new Error("Take a Strong password use uppercase, lowercase, number, and special character")
-    } else if(!gender){
-        throw new Error("Gender is not valid");
+    } else if(!age){
+        throw new Error("Age should be larger 16");
     }
 }
 

@@ -9,15 +9,19 @@ const authRouter = express.Router();
 authRouter.post("/signup", async (req,res)=>{
     try {
         validateSingUpData(req);
-        const {firstName , lastName, email, password , gender} = req.body;
+        const {firstName , lastName, email, password , age} = req.body;
         const existingUser = await User.findOne({email});
         if (existingUser) {
             return res.status(400).json({ message: "Email in use" });
         }
         const hashPassword = await bcrypt.hash(password, 10);
-        const user = new User({firstName, lastName,  email, password:hashPassword, gender});
-        await user.save();
-        res.send("User created" );
+        const user = new User({firstName, lastName,  email, password:hashPassword, age});
+        const savedUser = await user.save();
+        const token = await savedUser.getJWT();
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 8 * 3600000),
+          });
+          res.json({ message: "User Added successfully!", data: savedUser });
     } catch (error) {
         res.status(500).send("not register"+error.message);
     }
@@ -44,7 +48,7 @@ authRouter.post("/login", async (req, res)=>{
             throw new Error("Invalid Credentials");
         }
     } catch (error) {
-        res.status(500).send("not login"+error.message);
+        res.status(500).send("Not login : "+error.message);
     }
 });
 

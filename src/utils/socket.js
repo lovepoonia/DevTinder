@@ -14,7 +14,6 @@ const initializeSocket = (server) =>{
     io.on("connection" , (socket) => {
         socket.on("joinChat", ({firstName, userId, targetUserId}) => {
             const roomId = [userId, targetUserId].sort().join("$");
-            console.log(firstName + " room join :" + roomId);
             socket.join(roomId);
             
         });

@@ -13,7 +13,7 @@ const chatRouter = require("./routes/chat");
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173', 
+    origin: 'http://localhost:5173' || "https://devtinder-frontend-cu9l.onrender.com", 
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],                 

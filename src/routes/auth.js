@@ -19,7 +19,10 @@ authRouter.post("/signup", async (req,res)=>{
         const savedUser = await user.save();
         const token = await savedUser.getJWT();
         res.cookie("token", token, {
-            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,
+            secure: true,            // Ensure it's only sent over HTTPS
+            sameSite: "none",        // Required for cross-site cookie sharing
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
           });
           res.json({ message: "User Added successfully!", data: savedUser });
     } catch (error) {
@@ -42,7 +45,12 @@ authRouter.post("/login", async (req, res)=>{
         if(isPassword){
             const token = await user.getJWT();
 
-            res.cookie("token", token, {expires:new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)});
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,            // Ensure it's only sent over HTTPS
+                sameSite: "none",        // Required for cross-site cookie sharing
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+              });
             res.send(user);
         } else {
             throw new Error("Invalid Credentials");

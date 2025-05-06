@@ -12,12 +12,24 @@ const chatRouter = require("./routes/chat");
 
 const app = express();
 app.use(cookieParser());
-app.use(cors({
-    origin: "https://devtinder-frontend-cu9l.onrender.com", 
-    credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],                 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://devtinder-frontend-cu9l.onrender.com'
+  ];
+  
+  app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'], 
   }));
+  
+
 
   
 

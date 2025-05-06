@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const Chat = require("../models/chat");
+const connectionRequest = require("../models/connectionRequest");
 
 
 
@@ -17,10 +18,20 @@ const initializeSocket = (server) =>{
             socket.join(roomId);
             
         });
-        socket.on("sendMessage", async ({firstName , lastName , userId , targetUserId , text}) => {
-            const roomId = [userId, targetUserId].sort().join("$");
+        socket.on("sendMessage", async ({firstName , lastName , userId , targetUserId , text, createdAt}) => {
 
             try {
+                const roomId = [userId, targetUserId].sort().join("$");
+
+                const existingConnectionRequest = await connectionRequest.findOne({
+                    $or:[
+                        {fromUserId : userId, toUserId : targetUserId, status:"accepted"},
+                        {fromUserId: targetUserId, toUserId:userId ,status:"accepted" }
+                    ]
+                });
+                if(!existingConnectionRequest){
+                    return socket.to(roomId).emit("error", "You are not connected to this user");
+                }
                 let chat = await Chat.findOne({
                     participants:{$all : [userId , targetUserId],}
                 })
@@ -37,7 +48,7 @@ const initializeSocket = (server) =>{
                     text,
                 });
                 await chat.save();
-                io.to(roomId).emit("messageReceived" , {firstName, lastName,text});
+                io.to(roomId).emit("messageReceived" , {firstName, lastName,text ,createdAt});
             } catch (error) {
                 console.error(error.message)
             }

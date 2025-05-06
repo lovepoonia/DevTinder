@@ -80,8 +80,8 @@ const userSchema = new mongoose.Schema({
         default:'I am new user'
     },
     skills:{
-        type:[String],
-        default:["No skill"]
+        type:String,
+        default:"No skill"
     },
     gender:{
         type:String,

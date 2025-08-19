@@ -11,7 +11,10 @@ const initializeSocket = require("./utils/socket");
 const chatRouter = require("./routes/chat");
 
 const app = express();
+require("dotenv").config();
+app.use(express.json());
 app.use(cookieParser());
+
 const allowedOrigins = [
     'http://localhost:5173',
     'https://devtinder-frontend-cu9l.onrender.com'
@@ -29,13 +32,6 @@ const allowedOrigins = [
     allowedHeaders: ['Content-Type', 'Authorization'], 
   }));
   
-
-
-  
-
-require("dotenv").config();
-app.use(express.json());
-
 app.use("/auth" , authRouter);
 app.use("/profile" , profileRouter);
 app.use("/" , requestRouter);

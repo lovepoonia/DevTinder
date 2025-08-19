@@ -27,15 +27,6 @@ const userSchema = new mongoose.Schema({
         lowercase:true,
         minLength:13,
         maxLength:50,
-        // validate:{
-        //     validator:function(email){
-        //         return /^(.*(?:@gmail.com))$/.test(email);
-        //     },
-        //     message:
-        //       'email must include @gmail.com'
-        // }
-
-        // using validator library
         validate (value){
             if(!validator.isEmail(value)){
                 throw new Error('Email is invalid')
@@ -46,16 +37,6 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
         minLength:[8,"Password must be at least 8 characters"],
-        // validate: {
-        //     validator: function (value) {
-        //       // At least one uppercase, one lowercase, one number, and one special character
-        //       return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
-        //     },
-        //     message:
-        //       'Password must include uppercase, lowercase, number, and special character'
-        //   }
-
-        // using validator library
         validate (value){
             if(!validator.isStrongPassword(value)){ 
                 throw new Error('Password must include uppercase, lowercase, number, and special character');
@@ -85,9 +66,8 @@ const userSchema = new mongoose.Schema({
     },
     gender:{
         type:String,
-        enum: ['male', 'female', 'other'],
         validate(value){
-            if(!["male", "female","other"].includes(value)){
+            if(!["male", "female","other"].includes(value.toLowerCase())){
                 throw new Error("Invalid gender");
             }
         }

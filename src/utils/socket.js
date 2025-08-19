@@ -2,9 +2,6 @@ const socket = require("socket.io");
 const Chat = require("../models/chat");
 const connectionRequest = require("../models/connectionRequest");
 
-
-
-
 const initializeSocket = (server) =>{
     const io = socket(server, {
         cors : {

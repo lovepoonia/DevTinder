@@ -4,7 +4,6 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const authRouter = express.Router();
-// const userAuth = require("../middlewares/auth")
 
 authRouter.post("/signup", async (req,res)=>{
     try {
@@ -20,9 +19,9 @@ authRouter.post("/signup", async (req,res)=>{
         const token = await savedUser.getJWT();
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,            // Ensure it's only sent over HTTPS
-            sameSite: "none",        // Required for cross-site cookie sharing
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            secure: true,            
+            sameSite: "none",        
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
           });
           res.json({ message: "User Added successfully!", data: savedUser });
     } catch (error) {
@@ -47,9 +46,9 @@ authRouter.post("/login", async (req, res)=>{
 
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: true,            // Ensure it's only sent over HTTPS
-                sameSite: "none",        // Required for cross-site cookie sharing
-                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+                secure: true,           
+                sameSite: "none",        
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
               });
             res.send(user);
         } else {
@@ -60,18 +59,6 @@ authRouter.post("/login", async (req, res)=>{
     }
 });
 
-// first method
-// authRouter.post("/logout/:userId", userAuth, async (req,res)=>{
-//     const user = req.user;
-//     const userId = req.params?.userId;
-//     if(user._id = userId){
-//     res.clearCookie("token"); 
-//     res.send("logged out");
-//     }
-    
-// })
-
-// second method
 authRouter.post("/logout", async (req, res)=>{
     res.cookie("token" , null, {expires: new Date(Date.now())})
     res.send("logged out");
